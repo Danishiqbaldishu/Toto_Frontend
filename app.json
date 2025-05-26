@@ -13,13 +13,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show where you are on the map"
+      }
     },
     "android": {
       "package": "com.toto.app",
       "adaptiveIcon": {
         "foregroundImage": "assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+          "permissions": ["ACCESS_FINE_LOCATION"]
       },
       "edgeToEdgeEnabled": true
     },

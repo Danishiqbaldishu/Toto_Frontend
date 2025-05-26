@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient"; // ✅ Correct import for Expo
+import React, { useState, useContext } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
@@ -11,10 +11,21 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { UserContext } from "../context/UserContext";
 
 export default function LoginScreen({ navigation }) {
+  const { setLoggedInMobile } = useContext(UserContext);
   const [phone, setPhone] = useState("");
   const isValid = phone.length === 10;
+
+  const handleNext = () => {
+    if (isValid) {
+      setLoggedInMobile(phone); // ✅ 1. Save to context
+      navigation.navigate("OtpVerification", { phone }); // ✅ 2. Navigate with param
+    } else {
+      alert("Please enter a valid phone number");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -22,7 +33,6 @@ export default function LoginScreen({ navigation }) {
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {/* Banner + Help */}
         <View style={styles.topContainer}>
           <TouchableOpacity style={styles.helpButton}>
             <Text style={styles.helpIcon}>?</Text>
@@ -35,7 +45,6 @@ export default function LoginScreen({ navigation }) {
           />
         </View>
 
-        {/* Phone Input */}
         <View style={styles.sectionContainer}>
           <View style={styles.inputBox}>
             <Text style={styles.title}>What's your number?</Text>
@@ -52,7 +61,6 @@ export default function LoginScreen({ navigation }) {
             </View>
           </View>
 
-          {/* Bottom */}
           <View style={styles.bottomSection}>
             <Text style={styles.terms}>
               By continuing, you agree to the{" "}
@@ -72,7 +80,7 @@ export default function LoginScreen({ navigation }) {
             </Text>
 
             {isValid ? (
-              <TouchableOpacity onPress={() => navigation.navigate("OtpVerification", { phone })}>
+              <TouchableOpacity onPress={handleNext}>
                 <LinearGradient
                   colors={["#ed3436", "#fc5731"]}
                   start={{ x: 0, y: 0 }}
@@ -167,12 +175,12 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1, // changed from borderBottomWidth to borderWidth
+    borderWidth: 1,
     borderColor: "#ccc",
-    paddingHorizontal: 10, // thoda horizontal padding diya
-    paddingVertical: 3, // thoda vertical padding diya
-    borderRadius: 30, // rounded corners
-    marginBottom: 15, // thoda niche space
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 30,
+    marginBottom: 15,
   },
   prefix: {
     fontSize: 18,
@@ -200,9 +208,9 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     paddingVertical: 15,
-    borderRadius: 25, // thoda zyada radius for smoother corners
+    borderRadius: 25,
     alignItems: "center",
-    paddingHorizontal: 20, // thoda horizontal padding bhi add kar sakte hain
+    paddingHorizontal: 20,
   },
   nextText: {
     color: "#fff",

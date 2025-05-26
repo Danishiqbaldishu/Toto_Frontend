@@ -11,19 +11,52 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import * as Location from "expo-location";
 
 const roles = [
   { id: "rider", label: "As a Rider", icon: "bicycle" },
   { id: "driver", label: "As a Driver", icon: "car-sport" },
-  { id: "porter", label: "Use for Courier", icon: "cube" },
+  { id: "porter", label: "Use for send parcel", icon: "cube" },
 ];
 
 export default function RoleSelectionScreen({ navigation }) {
   const [pressedItem, setPressedItem] = useState(null);
 
-  const handleSelectRole = (role) => {
+const handleSelectRole = async (role) => {
+  if (role === "porter") {
+    try {
+      // Always ask for permission directly
+      const { status, canAskAgain } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        if (canAskAgain) {
+          alert("Location permission is required to send parcels.");
+        } else {
+          alert(
+            "Location permission has been permanently denied. Please enable it from app settings."
+          );
+        }
+        return;
+      }
+
+      // Fetch location after permission is granted
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
+      navigation.navigate("SendParcelScreen", {
+        location: { latitude, longitude },
+      });
+
+    } catch (error) {
+      console.warn("Error fetching location:", error);
+      alert("Could not fetch location. Please try again.");
+    }
+
+  } else {
     navigation.navigate("FormScreen", { selectedRole: role });
-  };
+  }
+};
+
 
   const renderItem = ({ item }) => {
     const scale = new Animated.Value(1);
